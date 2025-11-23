@@ -1,6 +1,7 @@
-import sys
 import math
 import random
+import sys
+
 import pygame
 
 # ----------------------------
@@ -37,7 +38,8 @@ WALL = 1
 EMPTY = 0
 DOT = 2
 POWER = 3
-GHOST_GATE = 4  # gate in front of ghost house (passable for Pacman, limited for ghosts)
+# gate in front of ghost house (passable for Pacman, limited for ghosts)
+GHOST_GATE = 4
 
 # Directions
 UP = (0, -1)
@@ -46,7 +48,6 @@ LEFT = (-1, 0)
 RIGHT = (1, 0)
 STOP = (0, 0)
 DIRS = [UP, LEFT, DOWN, RIGHT]
-
 
 # ----------------------------
 # Maze definition (40 x 30)
@@ -96,10 +97,10 @@ assert len(MAZE_LAYOUT) == GRID_H, "Maze rows must equal GRID_H"
 for r in MAZE_LAYOUT:
     assert len(r) == GRID_W, "Maze cols must equal GRID_W"
 
-
 # ----------------------------
 # Utility functions
 # ----------------------------
+
 
 def add(t1, t2):
     return (t1[0] + t2[0], t1[1] + t2[1])
@@ -180,7 +181,11 @@ class Pacman:
                 cx, cy = tile_center(tx, ty)
                 self.x, self.y = float(cx), float(cy)
                 self.dir = self.next_dir
-            if self.dir == STOP and self.next_dir != STOP and self.can_move_dir(self.next_dir):
+            if (
+                self.dir == STOP
+                and self.next_dir != STOP
+                and self.can_move_dir(self.next_dir)
+            ):
                 self.dir = self.next_dir
 
         # Try forward movement; stop if wall ahead
@@ -198,7 +203,8 @@ class Pacman:
                 self.dir = STOP
 
     def draw(self, surf):
-        pygame.draw.circle(surf, YELLOW, (int(self.x), int(self.y)), self.radius)
+        pygame.draw.circle(
+            surf, YELLOW, (int(self.x), int(self.y)), self.radius)
 
 
 class Ghost:
@@ -318,8 +324,10 @@ class Ghost:
         pygame.draw.circle(surf, col, (int(self.x), int(self.y)), self.radius)
         # Eyes for normal/eaten
         eye_col = WHITE if self.state != Ghost.FRIGHT else WHITE
-        pygame.draw.circle(surf, eye_col, (int(self.x) - 4, int(self.y) - 2), 3)
-        pygame.draw.circle(surf, eye_col, (int(self.x) + 4, int(self.y) - 2), 3)
+        pygame.draw.circle(
+            surf, eye_col, (int(self.x) - 4, int(self.y) - 2), 3)
+        pygame.draw.circle(
+            surf, eye_col, (int(self.x) + 4, int(self.y) - 2), 3)
 
 
 # ----------------------------
@@ -357,7 +365,9 @@ class Game:
         colors = [RED, PINK, CYAN, ORANGE]
 
         self.pacman = Pacman(self.pac_start)
-        self.ghosts = [Ghost(colors[i], ghost_starts[i], self.ghost_home) for i in range(4)]
+        self.ghosts = [
+            Ghost(colors[i], ghost_starts[i], self.ghost_home) for i in range(4)
+        ]
 
         self.score = 0
         self.lives = LIVES_START
@@ -472,7 +482,11 @@ class Game:
 
         # Revive eaten ghosts when at home tile center
         for g in self.ghosts:
-            if g.state == Ghost.EATEN and g.at_center_of_tile() and g.tile == self.ghost_home:
+            if (
+                g.state == Ghost.EATEN
+                and g.at_center_of_tile()
+                and g.tile == self.ghost_home
+            ):
                 g.state = Ghost.NORMAL
 
     def draw_maze(self, surf):
@@ -489,11 +503,11 @@ class Game:
                     pygame.draw.rect(surf, GREY, rect)
 
         # Draw dots
-        for (x, y) in self.dots:
+        for x, y in self.dots:
             cx, cy = tile_center(x, y)
             pygame.draw.circle(surf, WHITE, (cx, cy), 3)
         # Draw power pellets
-        for (x, y) in self.power:
+        for x, y in self.power:
             cx, cy = tile_center(x, y)
             pygame.draw.circle(surf, WHITE, (cx, cy), 6, width=2)
 
@@ -506,10 +520,12 @@ class Game:
             pimg = self.font.render(ptext, True, FRIGHT_BLUE)
             surf.blit(pimg, (WIDTH - 150, HEIGHT - 24))
         if self.win:
-            wimg = self.font.render("YOU WIN! Press Esc to exit.", True, YELLOW)
+            wimg = self.font.render(
+                "YOU WIN! Press Esc to exit.", True, YELLOW)
             surf.blit(wimg, (WIDTH // 2 - wimg.get_width() // 2, 10))
         if self.game_over:
-            gimg = self.font.render("GAME OVER! Press Esc to exit.", True, ORANGE)
+            gimg = self.font.render(
+                "GAME OVER! Press Esc to exit.", True, ORANGE)
             surf.blit(gimg, (WIDTH // 2 - gimg.get_width() // 2, 10))
 
     def run(self):
